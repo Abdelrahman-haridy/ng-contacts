@@ -1,14 +1,15 @@
 # NgContacts
 
+Contacts is a responsive web application for simple contact management that includes add, update, delete, search and list functionalities served by a backend Restful API.
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.1.3.
 
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-## Code scaffolding
+## Moked API server
+Run `json-server --watch server/db.json` for a dev server. Navigate to `http://localhost:3000`.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
 ## Build
 

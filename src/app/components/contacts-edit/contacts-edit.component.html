@@ -1,0 +1,62 @@
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <br>
+    <h1 class="h3 mb-4 text-gray-800">{{ pageTitle }}</h1>
+
+</div>
+<!-- /.container-fluid -->
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <form class="user" [formGroup]="updateContactForm" (ngSubmit)="onUpdate()">
+            <div class="form-group row">
+                <div class="col-sm-4 mb-3 mb-sm-0">
+                    <input type="text" class="form-control" formControlName="name" placeholder="Name"
+                        [(ngModel)]="contact.name">
+                    <div *ngIf="submitted && f.name.errors" class="invalid-feedback">
+                        <div *ngIf="f.name.errors" class="text-danger">
+                            This field is mandatory</div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <input type="email" class="form-control" formControlName="email" placeholder="Email"
+                        [(ngModel)]="contact.email">
+                    <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+                        <div *ngIf="f.email.errors" class="text-danger">
+                            This field is mandatory</div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" formControlName="phone" placeholder="phone"
+                        [(ngModel)]="contact.phone">
+                    <p><small>you can add more than on EX: 012234567, 032278999, 8765544321 </small></p>
+                    <div *ngIf="submitted && f.phone.errors" class="invalid-feedback">
+                        <div *ngIf="f.phone.errors" class="text-danger">
+                            This field is mandatory</div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-user btn-block">
+                Add
+                <img class="loading-btn" *ngIf="loading"
+                    src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+            </button>
+
+        </form>
+    </div>
+</div>
+
+<div bsModal #submittedModal="bs-modal" class="modal fade" tabindex="-1" role="dialog"
+    aria-labelledby="dialog-sizes-name1">
+    <div class="modal-dialog modal-sm notification">
+        <div class="thumbnail modal-content text-center">
+            <div class="modal-body" *ngIf="msg">
+                <h4>{{ msg }}</h4>
+            </div>
+            <div class="modal-body" *ngIf="error">
+                <h4>{{ error }}</h4>
+            </div>
+        </div>
+    </div>
+</div>
