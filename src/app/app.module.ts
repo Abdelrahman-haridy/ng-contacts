@@ -7,6 +7,7 @@ import { Ng2SearchPipeModule } from 'ng2-search-filter';
 
 //services
 import { ContactsService } from './services/contacts.service';
+import { AlertService } from './services/alert.service';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -14,6 +15,7 @@ import { ContactsListComponent } from './components/contacts-list/contacts-list.
 import { ContactsAddComponent } from './components/contacts-add/contacts-add.component';
 import { ContactsEditComponent } from './components/contacts-edit/contacts-edit.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
+import { AlertComponent } from './directives/alert/alert.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +23,8 @@ import { NavbarComponent } from './components/navbar/navbar.component';
     ContactsListComponent,
     ContactsAddComponent,
     ContactsEditComponent,
-    NavbarComponent
+    NavbarComponent,
+    AlertComponent
   ],
   imports: [
     BrowserModule,
@@ -32,7 +35,7 @@ import { NavbarComponent } from './components/navbar/navbar.component';
     ModalModule.forRoot(),
     Ng2SearchPipeModule
   ],
-  providers: [ContactsService],
+  providers: [ContactsService, AlertService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

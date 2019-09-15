@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup, Validators, FormArray } from "@angular/forms";
 
 // services
 import { ContactsService } from './../../services/contacts.service';
+import { AlertService } from './../../services/alert.service';
 
 @Component({
   selector: 'app-contacts-edit',
@@ -15,16 +16,13 @@ export class ContactsEditComponent implements OnInit {
   contact: any = {};
   loading = false;
   contactID;
-
-  // For model
   submitted = false;
-  msg: {};
-  error: {};
-  @ViewChild('submittedModal', { static: true }) submittedModal;
+
   updateContactForm: FormGroup;
   constructor(
     private formBuilder: FormBuilder,
     private contactsService: ContactsService,
+    private alertService: AlertService,
     private route: ActivatedRoute,
     private router: Router) {
     this.createForm();
@@ -42,15 +40,18 @@ export class ContactsEditComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.contactsService.getContact(params['id']).subscribe(res => {
         this.contact = res;
+        res.phones.forEach(element => {
+          this.addPhone();
+        });
       });
     });
   }
 
   createForm() {
     this.updateContactForm = this.formBuilder.group({
-      name: [null, Validators.required],
-      email: [null, Validators.required],
-      phone: [null, Validators.required]
+      name: [null, [Validators.required, Validators.minLength(5), Validators.maxLength(25)]],
+      email: [null, [Validators.required, Validators.email]],
+      phones: this.formBuilder.array([])
     });
   }
 
@@ -68,27 +69,42 @@ export class ContactsEditComponent implements OnInit {
 
       return this.contactsService.editContact(this.updateContactForm.value, this.contactID).subscribe(
         data => {
-          // console.log(data);
-          this.msg = 'Done';
-          this.loading = false;
-          this.submittedModal.show();
+          this.alertService.success('SUCCESS - Your contact updated :)  ');
           setTimeout(() => {
-            this.submittedModal.hide();
+            this.alertService.clear();
             this.router.navigate(['/']);
           }, 3000);
         },
         error => {
-          this.error = 'Note Updated';
-          this.submittedModal.show();
-          console.log(error);
+          this.alertService.error('ERROR - Your contact not updated :(  try again  ');
 
           this.loading = false;
           setTimeout(() => {
-            this.submittedModal.hide();
+            this.alertService.clear();
           }, 3000);
         }
       );
     }
+  }
+
+  get phones() {
+    return this.updateContactForm.get('phones') as FormArray;
+  }
+
+  addPhone() {
+    const control = <FormArray>this.updateContactForm.controls['phones'];
+    control.push(this.getPhone());
+  }
+
+  deletePhone(index) {
+    this.phones.removeAt(index);
+  }
+
+
+  private getPhone() {
+    return this.formBuilder.group({
+      phone: [null, [Validators.required, Validators.minLength(11), Validators.pattern("^[0-9]*$")]],
+    });
   }
 
 }

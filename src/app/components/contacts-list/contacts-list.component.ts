@@ -1,8 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 // services
 import { ContactsService } from './../../services/contacts.service';
+import { AlertService } from './../../services/alert.service';
+
 
 @Component({
   selector: 'app-contacts-list',
@@ -10,19 +12,15 @@ import { ContactsService } from './../../services/contacts.service';
   styleUrls: ['./contacts-list.component.scss']
 })
 export class ContactsListComponent implements OnInit {
-  pageTitle;
-  contactsList: any = [];
+  pageTitle = 'Contacts List';
+  contactsList;
   loading = false;
-
-  // For model
   submitted = false;
-  msg: {};
-  error: {};
-  @ViewChild('submittedModal', { static: true }) submittedModal;
+
   constructor(
     private contactsService: ContactsService,
     private route: ActivatedRoute, 
-    private router: Router) { }
+    private alertService: AlertService) { }
 
   ngOnInit() {
     this.route
@@ -49,20 +47,17 @@ export class ContactsListComponent implements OnInit {
       return this.contactsService.deleteContact(id).subscribe(
         data => {
           this.loading = true;
-          this.msg = 'Done';
-          this.submittedModal.show();
+          this.alertService.success('SUCCESS - Your contact deleted :)  ');
           setTimeout(() => {
-            this.submittedModal.hide();
+            this.alertService.clear();
             this.loading = false;
             this.getContactsList();
           }, 3000);
         },
         error => {
-          this.error = 'have Error';
-          this.submittedModal.show();
-          // console.log(error);
+          this.alertService.error('ERROR - Your contact not deleted :(  try again  ');
           setTimeout(() => {
-            this.submittedModal.hide();
+            this.alertService.clear();
           }, 3000);
         }
       );

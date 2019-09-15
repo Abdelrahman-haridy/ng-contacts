@@ -1,9 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup, Validators, FormArray } from "@angular/forms";
 
 // services
 import { ContactsService } from './../../services/contacts.service';
+import { AlertService } from './../../services/alert.service';
 
 @Component({
   selector: 'app-contacts-add',
@@ -16,28 +17,29 @@ export class ContactsAddComponent implements OnInit {
   loading = false;
 
   addNewContactForm: FormGroup;
-
-  // For model
   submitted = false;
-  msg: {};
-  error: {};
-  @ViewChild('submittedModal', { static: true }) submittedModal;
+  myFormValueChanges;
+
   constructor(
     private formBuilder: FormBuilder,
     private contactsService: ContactsService,
     private route: ActivatedRoute,
+    private alertService: AlertService,
     private router: Router) { }
 
   ngOnInit() {
+
     this.route
       .data
       .subscribe(v => {
         this.pageTitle = v['title'];
       });
     this.addNewContactForm = this.formBuilder.group({
-      name: [null, Validators.required],
-      email: [null, Validators.required],
-      phone: [null, Validators.required]
+      name: [null, [Validators.required, Validators.minLength(5), Validators.maxLength(25)]],
+      email: [null, [Validators.required, Validators.email]],
+      phones: this.formBuilder.array([
+        this.getPhone()
+      ])
     });
   }
   // convenience getter for easy access to form fields
@@ -54,27 +56,40 @@ export class ContactsAddComponent implements OnInit {
       // add new job api
       return this.contactsService.addNew(this.addNewContactForm.value).subscribe(
         data => {
-          // console.log(data);
-          this.msg = 'Done';
-          this.loading = false;
-          this.submittedModal.show();
+          this.alertService.success('SUCCESS - Your contact added :)  ');
           setTimeout(() => {
-            this.submittedModal.hide();
+            this.alertService.clear();
             this.router.navigate(['/']);
           }, 3000);
         },
         err => {
-          this.error = 'Not Add';
-          this.submittedModal.show();
-          // console.log(err);
-
           this.loading = false;
+          this.alertService.error('ERROR - Your contact not added :(  try again  ');
           setTimeout(() => {
-            this.submittedModal.hide();
+            this.alertService.clear();
           }, 3000);
         }
       );
     }
+  }
+
+  get phones() {
+    return this.addNewContactForm.get('phones') as FormArray;
+  }
+
+  addPhone() {
+    const control = <FormArray>this.addNewContactForm.controls['phones'];
+    control.push(this.getPhone());
+  }
+
+  deletePhone(index) {
+    this.phones.removeAt(index);
+  }
+
+  private getPhone() {
+    return this.formBuilder.group({
+      phone: [null, [Validators.required, Validators.minLength(11), Validators.pattern("^[0-9]*$")]],
+    });
   }
 
 }

@@ -1,62 +1,75 @@
-<!-- Begin Page Content -->
-<div class="container-fluid">
-    <br>
-    <h1 class="h3 mb-4 text-gray-800">{{ pageTitle }}</h1>
-
-</div>
 <!-- /.container-fluid -->
-
-<div class="card shadow mb-4">
+<br>
+<div class="card shadow mb-4 col-sm-6 offset-3">
+        <br>
+        <h1 class="h3 mb-4 text-gray-800">{{ pageTitle }}</h1>
     <div class="card-body">
         <form class="user" [formGroup]="updateContactForm" (ngSubmit)="onUpdate()">
             <div class="form-group row">
-                <div class="col-sm-4 mb-3 mb-sm-0">
-                    <input type="text" class="form-control" formControlName="name" placeholder="Name"
-                        [(ngModel)]="contact.name">
-                    <div *ngIf="submitted && f.name.errors" class="invalid-feedback">
-                        <div *ngIf="f.name.errors" class="text-danger">
-                            This field is mandatory</div>
+                    <div class="col-sm-12 mb-3 mb-sm-0">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input id="name" type="text"
+                                class="form-control {{ submitted && f.name.errors ? 'is-invalid' : ''}}"
+                                formControlName="name" placeholder="Name" [(ngModel)]="contact.name">
+                            <small *ngIf="submitted && f.name.errors" class="invalid-feedback form-text text-danger">
+                                <div *ngIf="f.name.errors.required">
+                                    This field is mandatory</div>
+                                <div *ngIf="f.name.errors.maxlength">Name must be not more than 25 characters</div>
+                                <div *ngIf="f.name.errors.minlength">Name must be at least 5 characters</div>
+                            </small>
+                        </div>
+    
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input id="email" type="email"
+                                class="form-control {{ submitted && f.email.errors ? 'is-invalid' : ''}}"
+                                formControlName="email" placeholder="Email" [(ngModel)]="contact.email">
+                            <div *ngIf="submitted && f.email.errors" class="invalid-feedback text-danger">
+                                <div *ngIf="f.email.errors.required">
+                                    This field is mandatory</div>
+                                <div *ngIf="f.email.errors.email">Email must be a valid email address</div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="col-sm-12">
+                        <div formArrayName="phones">
+                            <label for="phone">Phone Numbers :</label> <button type="button" class="btn btn-success"
+                                (click)="addPhone()"><i class="fas fa-plus"></i></button>
+    
+                            <div *ngFor="let item of f.phones.controls; let phoneIndex=index">
+                                <div class="input-group" [formGroupName]="phoneIndex">
+                                    <input id="phone" type="text"
+                                        class="form-control {{ submitted && item.controls.phone.errors ? 'is-invalid' : ''}}"
+                                        formControlName="phone" placeholder="phone" 
+                                        [ngModel]="contact.phones[phoneIndex] ? contact.phones[phoneIndex].phone : ''"
+                                        (ngModelChange)="contact.phones[f.phones.controls.length]">
+                                    <div class="input-group-append">
+                                        <button *ngIf="f.phones.controls.length > 1"  type="button" class="btn btn-danger" (click)="deletePhone(phoneIndex)"><i
+                                                class="fas fa-trash"></i></button>
+                                    </div>
+                                </div>
+                                <div *ngIf="submitted && item.controls.phone.errors" class="invalid-feedback text-danger">
+                                        <div *ngIf="item.controls.phone.errors.required">
+                                            This field is mandatory</div>
+                                        <div *ngIf="item.controls.phone.errors.minlength">Phone must be at least 11
+                                            characters</div>
+                                        <div *ngIf="item.controls.phone.errors.pattern" class="text-danger">Phone must be
+                                            Number Only
+                                        </div>
+                                    </div>
+                            </div>
+                            
+                        </div>
                     </div>
                 </div>
-                <div class="col-sm-4">
-                    <input type="email" class="form-control" formControlName="email" placeholder="Email"
-                        [(ngModel)]="contact.email">
-                    <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
-                        <div *ngIf="f.email.errors" class="text-danger">
-                            This field is mandatory</div>
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <input type="text" class="form-control" formControlName="phone" placeholder="phone"
-                        [(ngModel)]="contact.phone">
-                    <p><small>you can add more than on EX: 012234567, 032278999, 8765544321 </small></p>
-                    <div *ngIf="submitted && f.phone.errors" class="invalid-feedback">
-                        <div *ngIf="f.phone.errors" class="text-danger">
-                            This field is mandatory</div>
-                    </div>
-                </div>
-            </div>
-
             <button type="submit" class="btn btn-primary btn-user btn-block">
-                Add
-                <img class="loading-btn" *ngIf="loading"
-                    src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+                Update <i *ngIf="loading" class="fas fa-circle-notch fa-spin"></i>
             </button>
 
         </form>
-    </div>
-</div>
-
-<div bsModal #submittedModal="bs-modal" class="modal fade" tabindex="-1" role="dialog"
-    aria-labelledby="dialog-sizes-name1">
-    <div class="modal-dialog modal-sm notification">
-        <div class="thumbnail modal-content text-center">
-            <div class="modal-body" *ngIf="msg">
-                <h4>{{ msg }}</h4>
-            </div>
-            <div class="modal-body" *ngIf="error">
-                <h4>{{ error }}</h4>
-            </div>
-        </div>
     </div>
 </div>
